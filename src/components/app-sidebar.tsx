@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, MessageSquare, Save, LayoutTemplate, Wand2 } from "lucide-react";
+import { MessageSquare, Save, LayoutTemplate, Wand2 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -13,10 +13,10 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 const navItems = [
-  { label: "Generator", path: "/", icon: Wand2 },
-  { label: "Saved Prompts", path: "/saved", icon: Save },
-  { label: "Templates", path: "/templates", icon: LayoutTemplate },
-  { label: "AI Chat", path: "/ai-chat", icon: MessageSquare },
+  { label: "Генератор", path: "/", icon: Wand2 },
+  { label: "Сохраненные промпты", path: "/saved", icon: Save },
+  { label: "Шаблоны", path: "/templates", icon: LayoutTemplate },
+  { label: "ИИ Чат", path: "/ai-chat", icon: MessageSquare },
 ];
 export function AppSidebar(): JSX.Element {
   const { pathname } = useLocation();
@@ -28,7 +28,7 @@ export function AppSidebar(): JSX.Element {
           <span className="text-sm font-bold">PromptGen</span>
         </div>
         <div className="px-2 mt-2">
-          <SidebarInput placeholder="Quick search..." />
+          <SidebarInput placeholder="Быстрый поиск..." />
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -38,7 +38,7 @@ export function AppSidebar(): JSX.Element {
               <SidebarMenuItem key={item.path}>
                 <SidebarMenuButton asChild isActive={pathname === item.path}>
                   <Link to={item.path}>
-                    <item.icon className="w-4 h-4" /> 
+                    <item.icon className="w-4 h-4" />
                     <span>{item.label}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -49,7 +49,7 @@ export function AppSidebar(): JSX.Element {
       </SidebarContent>
       <SidebarFooter>
         <div className="px-4 py-4 border-t">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Tech Spec Architect v1.0</p>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Архитектор техзаданий v1.0</p>
         </div>
       </SidebarFooter>
     </Sidebar>

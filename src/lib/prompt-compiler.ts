@@ -17,29 +17,29 @@ export function compilePrompt(data: PromptFormData): string {
     techStack,
     extraRequirements,
   } = data;
-  const featuresList = features.length > 0 
+  const featuresList = features.length > 0
     ? features.map(f => `- ${f}`).join('\n')
-    : "- Standard CRUD operations";
-  return `Act as a Senior Software Architect and Product Manager. Generate a comprehensive Technical Specification Document (PRD) for the following application:
-# PROJECT OVERVIEW
-- **App Type:** ${appType || 'Generic Web Application'}
-- **Target Audience:** ${audience || 'General Users'}
-- **Core Goal:** ${goal || 'Provide a seamless digital experience'}
-# KEY FEATURES
+    : "- Стандартные CRUD операции";
+  return `Действуй как Senior Software Architect и Product Manager. Составь подробное Техническое Задание (PRD) для следующего приложения:
+# ОБЗОР ПРОЕКТА
+- **Тип приложения:** ${appType || 'Веб-приложение'}
+- **Целевая аудитория:** ${audience || 'Общие пользователи'}
+- **Основная цель:** ${goal || 'Обеспечение удобного цифрового опыта'}
+# КЛЮЧЕВЫЕ ФУНКЦИИ
 ${featuresList}
-# TECHNICAL STACK
-- **Primary Technologies:** ${techStack || 'Modern Full-Stack (React, Node.js)'}
-# DESIGN & UX REQUIREMENTS
-- **Style:** ${designStyle || 'Clean, Modern, and Professional'}
-- **Approach:** Prioritize accessibility, responsiveness, and intuitive navigation.
-${extraRequirements ? `# SPECIAL REQUIREMENTS\n${extraRequirements}` : ''}
-# INSTRUCTIONS FOR OUTPUT
-Please provide a structured document including:
-1. Executive Summary
-2. User Stories
-3. Information Architecture (Data Schema)
-4. Component Breakdown
-5. API Endpoints / Data Flow
-6. Security & Performance Considerations
-Format the output in clean Markdown for easy readability.`;
+# ТЕХНОЛОГИЧЕСКИЙ СТЕК
+- **Основные технологии:** ${techStack || 'Modern Full-Stack'}
+# ТРЕБОВАНИЯ К ДИЗАЙНУ И UX
+- **Стиль:** ${designStyle || 'Чистый, современный и профессиональный'}
+- **Подход:** Приоритет доступности, адаптивности и интуитивной навигации.
+${extraRequirements ? `# ОСОБЫЕ ТРЕБОВАНИЯ\n${extraRequirements}` : ''}
+# ИНСТРУКЦИИ ПО ФОРМАТУ ВЫВОДА
+Пожалуйста, предоставь структурированный документ, включающий:
+1. Краткое резюме
+2. Пользовательские истории (User Stories)
+3. Информационную архитектуру (Схема данных)
+4. Разбиение на компоненты
+5. API Endpoints / Потоки данных
+6. Рекомендации по безопасности и производительности
+Весь вывод должен быть исключительно на русском языке. Используй чистый Markdown для форматирования.`;
 }

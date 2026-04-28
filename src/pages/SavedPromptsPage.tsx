@@ -8,22 +8,23 @@ import { Search, Copy, Trash2, Calendar, Tags as TagIcon } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { ru } from "date-fns/locale";
 export default function SavedPromptsPage() {
   const prompts = useQuery(api.prompts.listSavedPrompts);
   const deletePrompt = useMutation(api.prompts.deletePrompt);
   const [search, setSearch] = useState("");
-  const filteredPrompts = prompts?.filter(p => 
+  const filteredPrompts = prompts?.filter(p =>
     p.title.toLowerCase().includes(search.toLowerCase()) ||
     p.tags.some(t => t.toLowerCase().includes(search.toLowerCase()))
   );
   const handleCopy = (content: string) => {
     navigator.clipboard.writeText(content);
-    toast.success("Prompt copied!");
+    toast.success("Промпт скопирован!");
   };
   const handleDelete = async (id: any) => {
-    if (confirm("Are you sure you want to delete this prompt?")) {
+    if (confirm("Вы уверены, что хотите удалить этот промпт?")) {
       await deletePrompt({ id });
-      toast.success("Prompt deleted.");
+      toast.success("Промпт удален.");
     }
   };
   return (
@@ -31,14 +32,14 @@ export default function SavedPromptsPage() {
       <div className="py-8 md:py-10 lg:py-12">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Saved Library</h1>
-            <p className="text-muted-foreground">Manage your generated technical specification prompts.</p>
+            <h1 className="text-3xl font-bold tracking-tight">Сохраненная библиотека</h1>
+            <p className="text-muted-foreground">Управляйте вашими сгенерированными промптами для техзаданий.</p>
           </div>
           <div className="relative w-full md:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              placeholder="Search prompts or tags..." 
-              className="pl-9" 
+            <Input
+              placeholder="Поиск промптов или тегов..."
+              className="pl-9"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -53,8 +54,8 @@ export default function SavedPromptsPage() {
             <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
               <Search className="h-6 w-6 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-semibold">No prompts found</h3>
-            <p className="text-muted-foreground">Try adjusting your search or generate a new prompt.</p>
+            <h3 className="text-lg font-semibold">Промпты не найдены</h3>
+            <p className="text-muted-foreground">Попробуйте изменить параметры поиска.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -67,7 +68,7 @@ export default function SavedPromptsPage() {
                   </div>
                   <div className="flex items-center text-xs text-muted-foreground gap-2 mt-1">
                     <Calendar className="h-3 w-3" />
-                    {format(prompt.createdAt, "MMM d, yyyy")}
+                    {format(prompt.createdAt, "d MMM yyyy", { locale: ru })}
                   </div>
                 </CardHeader>
                 <CardContent className="flex-1">
@@ -84,7 +85,7 @@ export default function SavedPromptsPage() {
                 </CardContent>
                 <CardFooter className="pt-3 border-t bg-muted/50 gap-2">
                   <Button variant="secondary" size="sm" className="flex-1" onClick={() => handleCopy(prompt.content)}>
-                    <Copy className="h-3.5 w-3.5 mr-2" /> Copy
+                    <Copy className="h-3.5 w-3.5 mr-2" /> Скопировать
                   </Button>
                   <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive" onClick={() => handleDelete(prompt._id)}>
                     <Trash2 className="h-3.5 w-3.5" />
