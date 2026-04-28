@@ -2,7 +2,7 @@
 
 This is a full-stack, production-ready AI Chat application built on Cloudflare Workers and the Convex backend platform. It provides a secure, real-time, and scalable foundation for building AI-powered conversational interfaces.
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/Rustam77-77/promptgen-tech-spec-architect)
 
 ## Key Features
 
@@ -113,7 +113,7 @@ The application will now be running at `http://localhost:3000`. The `convex dev`
 
 This project is designed for seamless deployment to Cloudflare.
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/Rustam77-77/promptgen-tech-spec-architect)
 
 ### Manual Deployment Steps
 
