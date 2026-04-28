@@ -10,32 +10,12 @@ export const savePrompt = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      console.error("[savePrompt] Unauthorized access attempt");
-      throw new Error("Unauthorized");
-    }
-    // Sanitize and validate inputs
-    const sanitizedTitle = args.title.trim() || "Untitled Prompt";
-    const sanitizedContent = args.content.trim();
-    const cleanTags = args.tags.map(t => t.trim()).filter(t => t.length > 0);
-    const sanitizedAppType = args.appType.trim() || "General";
-    if (!sanitizedContent) {
-      console.error("[savePrompt] Attempted to save empty content");
-      throw new Error("Prompt content cannot be empty");
-    }
-    try {
-      return await ctx.db.insert("savedPrompts", {
-        userId,
-        title: sanitizedTitle,
-        content: sanitizedContent,
-        tags: cleanTags,
-        appType: sanitizedAppType,
-        createdAt: Date.now(),
-      });
-    } catch (error) {
-      console.error("[savePrompt] Server Error during insert:", error);
-      throw new Error("Failed to save prompt to database");
-    }
+    if (!userId) throw new Error("Unauthorized");
+    return await ctx.db.insert("savedPrompts", {
+      userId,
+      ...args,
+      createdAt: Date.now(),
+    });
   },
 });
 export const listSavedPrompts = query({
@@ -64,5 +44,23 @@ export const listTemplates = query({
   args: {},
   handler: async (ctx) => {
     return await ctx.db.query("promptTemplates").collect();
+  },
+});
+// Internal mutation to seed templates if needed
+export const seedTemplates = internalMutation({
+  args: {
+    templates: v.array(
+      v.object({
+        title: v.string(),
+        description: v.string(),
+        presetData: v.string(),
+        category: v.string(),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    for (const t of args.templates) {
+      await ctx.db.insert("promptTemplates", t);
+    }
   },
 });

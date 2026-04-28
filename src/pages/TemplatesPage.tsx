@@ -1,48 +1,50 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "convex/react";
+import { api } from "@convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Globe, ShoppingCart } from "lucide-react";
+import { LayoutTemplate, ArrowRight, Zap, Globe, MessageSquare, ShoppingCart, ShieldCheck } from "lucide-react";
 const STATIC_TEMPLATES = [
   {
-    title: "Интернет-магазин",
-    description: "Маркетплейс с корзиной, платежами и управлением запасами.",
-    category: "Торговля",
+    title: "E-Commerce App",
+    description: "Multi-vendor marketplace with cart, payments, and inventory.",
+    category: "Commerce",
     icon: ShoppingCart,
     presetData: JSON.stringify({
-      appType: "E-Commerce Маркетплейс",
-      audience: "Онлайн-покупатели и продавцы",
-      goal: "Обеспечение безопасных транзакций и управления магазином",
-      features: ["Авторизация пользователей", "Интеграция платежей", "Поиск и фильтрация"],
-      designStyle: "Ориентированный на ритейл, доверительный стиль",
+      appType: "E-Commerce Marketplace",
+      audience: "Online shoppers and vendors",
+      goal: "Facilitate secure product transactions and store management",
+      features: ["User Authentication", "Payment Integration", "Search & Filtering"],
+      designStyle: "Retail-focused, high trust",
       techStack: "Next.js, Stripe, Convex",
     })
   },
   {
-    title: "SaaS Дашборд",
-    description: "Аналитический интерфейс с управлением командой.",
-    category: "Бизнес",
+    title: "SaaS Dashboard",
+    description: "Analytics-heavy interface with team management.",
+    category: "Business",
     icon: Zap,
     presetData: JSON.stringify({
-      appType: "B2B SaaS Аналитика",
-      audience: "Менеджеры по операциям",
-      goal: "Визуализация KPI и управление продуктивностью команды",
-      features: ["Аналитическая панель", "Авторизация пользователей"],
-      designStyle: "Минималистичный, оптимизированный под данные",
+      appType: "B2B SaaS Analytics",
+      audience: "Operations Managers",
+      goal: "Visualize KPIs and manage team productivity",
+      features: ["Analytics Dashboard", "User Authentication", "Analytics Dashboard"],
+      designStyle: "Density-optimized, minimal",
       techStack: "React, Recharts, Tailwind",
     })
   },
   {
-    title: "Социальная сеть",
-    description: "Ленты новостей, мессенджер и профили пользователей.",
-    category: "Социальное",
+    title: "Social Networking",
+    description: "Feeds, messaging, and user profiles.",
+    category: "Social",
     icon: Globe,
     presetData: JSON.stringify({
-      appType: "Социальная платформа",
-      audience: "Сообщества",
-      goal: "Соединение пользователей через обмен контентом в реальном времени",
-      features: ["Чат в реальном времени", "Загрузка файлов", "Лента соцсетей"],
-      designStyle: "Яркий, вовлекающий интерфейс",
+      appType: "Social Media Platform",
+      audience: "Community members",
+      goal: "Connect users through real-time content sharing",
+      features: ["Real-time Chat", "File Uploads", "Social Media Feed"],
+      designStyle: "Vibrant, engagement-driven",
       techStack: "React Native, Node.js, WebSockets",
     })
   }
@@ -56,8 +58,8 @@ export default function TemplatesPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-8 md:py-10 lg:py-12">
         <div className="mb-10">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Готовые шаблоны</h1>
-          <p className="text-muted-foreground text-lg">Начните работу с профессионально подготовленных чертежей техзаданий.</p>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Preset Templates</h1>
+          <p className="text-muted-foreground text-lg">Kickstart your technical spec with professionally curated blueprints.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {STATIC_TEMPLATES.map((template) => (
@@ -73,11 +75,11 @@ export default function TemplatesPage() {
                 <CardDescription>{template.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <Button
-                  className="w-full group/btn"
+                <Button 
+                  className="w-full group/btn" 
                   onClick={() => handleUseTemplate(template.presetData)}
                 >
-                  Начать с шаблона
+                  Start with Template 
                   <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                 </Button>
               </CardContent>

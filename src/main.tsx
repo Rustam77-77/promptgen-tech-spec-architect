@@ -16,9 +16,9 @@ import '@/index.css'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { HomePage } from '@/pages/HomePage'
 import { AiChatPage } from '@/pages/AiChatPage'
-
+import SavedPromptsPage from '@/pages/SavedPromptsPage'
+import TemplatesPage from '@/pages/TemplatesPage'
 const queryClient = new QueryClient();
-
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -26,10 +26,11 @@ const router = createBrowserRouter([
     children: [
       { path: "/", element: <HomePage /> },
       { path: "/ai-chat", element: <AiChatPage /> },
+      { path: "/saved", element: <SavedPromptsPage /> },
+      { path: "/templates", element: <TemplatesPage /> },
     ],
   },
 ]);
-
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
