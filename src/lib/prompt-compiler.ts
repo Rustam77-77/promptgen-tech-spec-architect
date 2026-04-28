@@ -1,38 +1,41 @@
 export interface PromptFormData {
-  appType: string;
-  audience: string;
-  goal: string;
-  features: string[];
-  designStyle: string;
-  techStack: string;
-  extraRequirements: string;
+  appType?: string;
+  audience?: string;
+  goal?: string;
+  features?: string[];
+  designStyle?: string;
+  techStack?: string;
+  extraRequirements?: string;
 }
-export function compilePrompt(data: PromptFormData): string {
+export function compilePrompt(data: PromptFormData | null | undefined): string {
+  if (!data) {
+    return "Ожидание данных для генерации ТЗ...";
+  }
   const {
-    appType,
-    audience,
-    goal,
-    features,
-    designStyle,
-    techStack,
-    extraRequirements,
+    appType = "Веб-приложение",
+    audience = "Общие пользователи",
+    goal = "Обеспечение удобного цифрового опыта",
+    features = [],
+    designStyle = "Чистый, современный и профессиональный",
+    techStack = "Modern Full-Stack",
+    extraRequirements = "",
   } = data;
-  const featuresList = features.length > 0
+  const featuresList = Array.isArray(features) && features.length > 0
     ? features.map(f => `- ${f}`).join('\n')
     : "- Стандартные CRUD операции";
   return `Действуй как Senior Software Architect и Product Manager. Составь подробное Техническое Задание (PRD) для следующего приложения:
 # ОБЗОР ПРОЕКТА
-- **Тип приложения:** ${appType || 'Веб-приложение'}
-- **Целевая аудитория:** ${audience || 'Общие пользователи'}
-- **Основная цель:** ${goal || 'Обеспечение удобного цифрового опыта'}
+- **Тип приложения:** ${appType}
+- **Целевая аудитория:** ${audience}
+- **Основная цель:** ${goal}
 # КЛЮЧЕВЫЕ ФУНКЦИИ
 ${featuresList}
 # ТЕХНОЛОГИЧЕСКИЙ СТЕК
-- **Основные технологии:** ${techStack || 'Modern Full-Stack'}
+- **Основные технологии:** ${techStack}
 # ТРЕБОВАНИЯ К ДИЗАЙНУ И UX
-- **Стиль:** ${designStyle || 'Чистый, современный и профессиональный'}
+- **Стиль:** ${designStyle}
 - **Подход:** Приоритет доступности, адаптивности и интуитивной навигации.
-${extraRequirements ? `# ОСОБЫЕ ТРЕБОВАНИЯ\n${extraRequirements}` : ''}
+${extraRequirements ? `# ОСОБЫЕ ТРЕБОВАНИЯ\n${extraRequirements}\n` : ''}
 # ИНСТРУКЦИИ ПО ФОРМАТУ ВЫВОДА
 Пожалуйста, предоставь структурированный документ, включающий:
 1. Краткое резюме
