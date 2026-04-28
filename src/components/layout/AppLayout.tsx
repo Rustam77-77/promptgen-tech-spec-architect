@@ -17,7 +17,7 @@ export function AppLayout({ children, container = false, className, contentClass
     <SidebarProvider defaultOpen={false}>
       <AppSidebar />
       <SidebarInset className={className}>
-        {/* Hide trigger on mobile as we use BottomNav */}
+        {/* Only show trigger on desktop when sidebar is present */}
         {!isMobile && (
           <div className="absolute left-2 top-2 z-20">
             <SidebarTrigger />

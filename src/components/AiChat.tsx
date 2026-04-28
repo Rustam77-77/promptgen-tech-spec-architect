@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useAction, useConvexAuth } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -15,7 +16,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Sheet,
@@ -81,9 +81,9 @@ export function AiChat() {
   const ThreadList = (
     <div className="flex flex-col h-full bg-background">
       <div className="p-4 border-b">
-        <Button 
-          variant="default" 
-          className="w-full h-12 rounded-xl md-card" 
+        <Button
+          variant="default"
+          className="w-full h-12 rounded-xl md-card"
           onClick={() => { setSelectedThreadId(null); setIsThreadListOpen(false); setIsSettingsOpen(true); }}
         >
           <Plus className="w-4 h-4 mr-2" /> Новый чат
@@ -92,17 +92,20 @@ export function AiChat() {
       <ScrollArea className="flex-1">
         <div className="p-3 space-y-2">
           {threads?.map(t => (
-            <div 
-              key={t._id} 
-              className={`flex items-center p-3 rounded-xl cursor-pointer ripple-effect ${selectedThreadId === t._id ? "bg-primary/10 text-primary" : "hover:bg-muted"}`} 
+            <div
+              key={t._id}
+              className={cn(
+                "flex items-center p-3 rounded-xl cursor-pointer ripple-effect group",
+                selectedThreadId === t._id ? "bg-primary/10 text-primary" : "hover:bg-muted"
+              )}
               onClick={() => { setSelectedThreadId(t._id); setIsThreadListOpen(false); }}
             >
               <MessageSquare className="h-4 w-4 mr-3 opacity-70" />
               <span className="text-sm font-medium truncate flex-1">{t.title}</span>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-8 w-8 opacity-0 group-hover:opacity-100" 
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 opacity-0 group-hover:opacity-100"
                 onClick={(e) => { e.stopPropagation(); if(confirm("Удалить?")) deleteThread({ threadId: t._id }); }}
               >
                 <Trash2 className="h-3 w-3 text-destructive" />
@@ -141,11 +144,11 @@ export function AiChat() {
         <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
           <div className="space-y-4 max-w-3xl mx-auto pb-4">
             {threadData?.messages.map(m => (
-              <div key={m._id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div key={m._id} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
                 <div className={cn(
                   "max-w-[85%] p-4 rounded-2xl shadow-sm",
-                  m.role === "user" 
-                    ? "bg-primary text-primary-foreground rounded-tr-none" 
+                  m.role === "user"
+                    ? "bg-primary text-primary-foreground rounded-tr-none"
                     : "bg-muted text-foreground rounded-tl-none border"
                 )}>
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.content}</p>
@@ -161,15 +164,15 @@ export function AiChat() {
         </ScrollArea>
         <footer className="p-4 border-t bg-background/80 backdrop-blur-md">
           <div className="max-w-3xl mx-auto flex gap-2 items-end">
-            <Textarea 
-              value={message} 
-              onChange={e => setMessage(e.target.value)} 
-              placeholder="Спросите о проекте..." 
+            <Textarea
+              value={message}
+              onChange={e => setMessage(e.target.value)}
+              placeholder="Спросите о проекте..."
               className="min-h-[52px] max-h-32 rounded-2xl md-card resize-none py-4"
               onKeyDown={(e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
             />
-            <Button 
-              onClick={handleSendMessage} 
+            <Button
+              onClick={handleSendMessage}
               disabled={isSending || !message.trim() || !selectedThreadId}
               className="h-[52px] w-[52px] rounded-full p-0 shadow-lg ripple-effect shrink-0"
             >
@@ -177,7 +180,6 @@ export function AiChat() {
             </Button>
           </div>
         </footer>
-        {/* Settings Dialog */}
         <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
           <DialogContent className="rounded-3xl">
             <DialogHeader>
@@ -195,7 +197,7 @@ export function AiChat() {
               </div>
             </div>
             <DialogFooter>
-              <Button 
+              <Button
                 onClick={selectedThreadId ? () => { updateThread({ threadId: selectedThreadId, title: threadTitle, systemPrompt }); setIsSettingsOpen(false); } : handleCreateThread}
                 className="w-full h-12"
               >

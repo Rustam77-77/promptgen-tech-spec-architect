@@ -4,6 +4,7 @@ import { Copy, Save, Eye, Edit3 } from "lucide-react";
 import { toast } from "sonner";
 import { useMutation } from "convex/react";
 import { api } from "@convex/_generated/api";
+import { cn } from "@/lib/utils";
 import { compilePrompt, PromptFormData } from "@/lib/prompt-compiler";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
