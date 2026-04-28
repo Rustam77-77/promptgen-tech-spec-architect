@@ -1,13 +1,13 @@
 import React from "react";
 import { MessageSquare, Save, LayoutTemplate, Wand2 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarHeader,
-  SidebarInput,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -20,26 +20,30 @@ const navItems = [
 ];
 export function AppSidebar(): JSX.Element {
   const { pathname } = useLocation();
+  const isMobile = useIsMobile();
   return (
-    <Sidebar>
+    <Sidebar className={isMobile ? "hidden" : ""}>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-1">
-          <div className="h-6 w-6 rounded-md bg-gradient-to-br from-blue-500 to-emerald-500" />
-          <span className="text-sm font-bold">PromptGen</span>
-        </div>
-        <div className="px-2 mt-2">
-          <SidebarInput placeholder="Быстрый поиск..." />
+        <div className="flex items-center gap-3 px-4 py-6">
+          <div className="h-8 w-8 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg">
+            <Wand2 className="w-5 h-5" />
+          </div>
+          <span className="text-lg font-bold tracking-tight">PromptGen</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarMenu>
+          <SidebarMenu className="px-2">
             {navItems.map((item) => (
-              <SidebarMenuItem key={item.path}>
-                <SidebarMenuButton asChild isActive={pathname === item.path}>
+              <SidebarMenuItem key={item.path} className="mb-1">
+                <SidebarMenuButton 
+                  asChild 
+                  isActive={pathname === item.path}
+                  className="h-11 rounded-xl px-4 transition-all"
+                >
                   <Link to={item.path}>
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.label}</span>
+                    <item.icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -47,9 +51,10 @@ export function AppSidebar(): JSX.Element {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <div className="px-4 py-4 border-t">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">Архитектор техзаданий v1.0</p>
+      <SidebarFooter className="p-6">
+        <div className="p-4 rounded-2xl bg-muted/50 border border-border/50">
+          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Android Edition</p>
+          <p className="text-[10px] text-muted-foreground mt-1 opacity-60">v1.2 Material Refined</p>
         </div>
       </SidebarFooter>
     </Sidebar>

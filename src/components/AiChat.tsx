@@ -4,7 +4,7 @@ import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,13 +17,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Send, Settings, Trash2, Plus } from "lucide-react";
-import { toast } from "@/components/ui/sonner";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Send, Settings, Trash2, Plus, Menu, MessageSquare } from "lucide-react";
+import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 export function AiChat() {
+  const isMobile = useIsMobile();
   const [selectedThreadId, setSelectedThreadId] = useState<Id<"chatThreads"> | null>(null);
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isThreadListOpen, setIsThreadListOpen] = useState(false);
   const [systemPrompt, setSystemPrompt] = useState("Вы — опытный архитектор ПО.");
   const [threadTitle, setThreadTitle] = useState("Новый чат");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -39,13 +49,7 @@ export function AiChat() {
       const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
       if (viewport) viewport.scrollTop = viewport.scrollHeight;
     }
-  }, [threadData?.messages]);
-  useEffect(() => {
-    if (threadData?.thread) {
-      setSystemPrompt(threadData.thread.systemPrompt);
-      setThreadTitle(threadData.thread.title);
-    }
-  }, [threadData?.thread]);
+  }, [threadData?.messages, isSending]);
   const handleCreateThread = async () => {
     try {
       const id = await createThread({
@@ -54,9 +58,10 @@ export function AiChat() {
       });
       setSelectedThreadId(id);
       setIsSettingsOpen(false);
+      setIsThreadListOpen(false);
       toast.success("Чат создан");
     } catch (error) {
-      toast.error("Ошибка при создании чата");
+      toast.error("Ошибка создания");
     }
   };
   const handleSendMessage = async () => {
@@ -67,83 +72,138 @@ export function AiChat() {
     try {
       await sendMessage({ threadId: selectedThreadId, content });
     } catch (error) {
-      toast.error("Ошибка при отправке");
+      toast.error("Ошибка отправки");
       setMessage(content);
     } finally {
       setIsSending(false);
     }
   };
-  return (
-    <div className="flex h-screen bg-background">
-      <div className="w-64 border-r bg-muted/50 flex flex-col">
-        <div className="p-4 border-b">
-          <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="w-full" onClick={() => setSelectedThreadId(null)}>
-                <Plus className="w-4 h-4 mr-2" /> Новый чат
+  const ThreadList = (
+    <div className="flex flex-col h-full bg-background">
+      <div className="p-4 border-b">
+        <Button 
+          variant="default" 
+          className="w-full h-12 rounded-xl md-card" 
+          onClick={() => { setSelectedThreadId(null); setIsThreadListOpen(false); setIsSettingsOpen(true); }}
+        >
+          <Plus className="w-4 h-4 mr-2" /> Новый чат
+        </Button>
+      </div>
+      <ScrollArea className="flex-1">
+        <div className="p-3 space-y-2">
+          {threads?.map(t => (
+            <div 
+              key={t._id} 
+              className={`flex items-center p-3 rounded-xl cursor-pointer ripple-effect ${selectedThreadId === t._id ? "bg-primary/10 text-primary" : "hover:bg-muted"}`} 
+              onClick={() => { setSelectedThreadId(t._id); setIsThreadListOpen(false); }}
+            >
+              <MessageSquare className="h-4 w-4 mr-3 opacity-70" />
+              <span className="text-sm font-medium truncate flex-1">{t.title}</span>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 opacity-0 group-hover:opacity-100" 
+                onClick={(e) => { e.stopPropagation(); if(confirm("Удалить?")) deleteThread({ threadId: t._id }); }}
+              >
+                <Trash2 className="h-3 w-3 text-destructive" />
               </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{selectedThreadId ? "Настройки чата" : "Новый чат"}</DialogTitle>
-                <DialogDescription>Настройте параметры поведения ИИ.</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div>
-                  <Label>Название</Label>
-                  <Input value={threadTitle} onChange={e => setThreadTitle(e.target.value)} />
-                </div>
-                <div>
-                  <Label>Системный промпт</Label>
-                  <Textarea value={systemPrompt} onChange={e => setSystemPrompt(e.target.value)} rows={4} />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={selectedThreadId ? () => updateThread({ threadId: selectedThreadId, title: threadTitle, systemPrompt }) : handleCreateThread}>
-                  {selectedThreadId ? "Сохранить" : "Создать"}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+            </div>
+          ))}
         </div>
-        <ScrollArea className="flex-1">
-          <div className="p-2 space-y-1">
-            {threads?.map(t => (
-              <div key={t._id} className={`flex items-center p-2 rounded-lg cursor-pointer hover:bg-accent ${selectedThreadId === t._id ? "bg-accent" : ""}`} onClick={() => setSelectedThreadId(t._id)}>
-                <span className="text-sm truncate flex-1">{t.title}</span>
-                <Trash2 className="h-3 w-3 opacity-50 hover:text-destructive" onClick={(e) => { e.stopPropagation(); if(confirm("Удалить этот чат?")) deleteThread({ threadId: t._id }); }} />
+      </ScrollArea>
+    </div>
+  );
+  return (
+    <div className="flex h-[calc(100vh-4rem)] md:h-screen bg-background overflow-hidden">
+      {!isMobile && <div className="w-72 border-r">{ThreadList}</div>}
+      <div className="flex-1 flex flex-col relative">
+        <header className="border-b h-16 flex justify-between items-center px-4 bg-background/50 backdrop-blur-md sticky top-0 z-10">
+          <div className="flex items-center gap-3">
+            {isMobile && (
+              <Sheet open={isThreadListOpen} onOpenChange={setIsThreadListOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon"><Menu className="h-5 w-5" /></Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-0 w-80">
+                  <SheetHeader className="p-4 border-b">
+                    <SheetTitle>Мои чаты</SheetTitle>
+                  </SheetHeader>
+                  {ThreadList}
+                </SheetContent>
+              </Sheet>
+            )}
+            <h2 className="font-bold text-sm md:text-base truncate max-w-[200px]">
+              {threadData?.thread.title || "Выберите чат"}
+            </h2>
+          </div>
+          <Button variant="ghost" size="icon" onClick={() => setIsSettingsOpen(true)}><Settings className="h-5 w-5 text-muted-foreground" /></Button>
+        </header>
+        <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
+          <div className="space-y-4 max-w-3xl mx-auto pb-4">
+            {threadData?.messages.map(m => (
+              <div key={m._id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={cn(
+                  "max-w-[85%] p-4 rounded-2xl shadow-sm",
+                  m.role === "user" 
+                    ? "bg-primary text-primary-foreground rounded-tr-none" 
+                    : "bg-muted text-foreground rounded-tl-none border"
+                )}>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{m.content}</p>
+                </div>
               </div>
             ))}
+            {isSending && (
+              <div className="flex justify-start">
+                <div className="bg-muted p-4 rounded-2xl rounded-tl-none animate-pulse text-xs font-medium">Думает...</div>
+              </div>
+            )}
           </div>
         </ScrollArea>
-      </div>
-      <div className="flex-1 flex flex-col">
-        {selectedThreadId && threadData ? (
-          <>
-            <div className="border-b p-4 flex justify-between items-center">
-              <h2 className="font-semibold">{threadData.thread.title}</h2>
-              <Button variant="ghost" size="icon" onClick={() => setIsSettingsOpen(true)}><Settings className="h-4 w-4" /></Button>
-            </div>
-            <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
-              <div className="space-y-4 max-w-3xl mx-auto">
-                {threadData.messages.map(m => (
-                  <div key={m._id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                    <Card className={`max-w-[80%] p-3 ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
-                      <p className="text-sm whitespace-pre-wrap">{m.content}</p>
-                    </Card>
-                  </div>
-                ))}
-                {isSending && <div className="text-sm text-muted-foreground">Думает...</div>}
+        <footer className="p-4 border-t bg-background/80 backdrop-blur-md">
+          <div className="max-w-3xl mx-auto flex gap-2 items-end">
+            <Textarea 
+              value={message} 
+              onChange={e => setMessage(e.target.value)} 
+              placeholder="Спросите о проекте..." 
+              className="min-h-[52px] max-h-32 rounded-2xl md-card resize-none py-4"
+              onKeyDown={(e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
+            />
+            <Button 
+              onClick={handleSendMessage} 
+              disabled={isSending || !message.trim() || !selectedThreadId}
+              className="h-[52px] w-[52px] rounded-full p-0 shadow-lg ripple-effect shrink-0"
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+          </div>
+        </footer>
+        {/* Settings Dialog */}
+        <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+          <DialogContent className="rounded-3xl">
+            <DialogHeader>
+              <DialogTitle>Настройки чата</DialogTitle>
+              <DialogDescription>Инструкции для архитектора</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Название</Label>
+                <Input value={threadTitle} onChange={e => setThreadTitle(e.target.value)} className="h-12" />
               </div>
-            </ScrollArea>
-            <div className="p-4 border-t">
-              <div className="max-w-3xl mx-auto flex gap-2">
-                <Textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Сообщение..." rows={1} />
-                <Button onClick={handleSendMessage} disabled={isSending}><Send className="h-4 w-4" /></Button>
+              <div className="space-y-2">
+                <Label>Инструкции (System Prompt)</Label>
+                <Textarea value={systemPrompt} onChange={e => setSystemPrompt(e.target.value)} rows={4} />
               </div>
             </div>
-          </>
-        ) : <div className="flex-1 flex items-center justify-center text-muted-foreground">Выберите чат или создайте новый</div>}
+            <DialogFooter>
+              <Button 
+                onClick={selectedThreadId ? () => { updateThread({ threadId: selectedThreadId, title: threadTitle, systemPrompt }); setIsSettingsOpen(false); } : handleCreateThread}
+                className="w-full h-12"
+              >
+                Сохранить
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
